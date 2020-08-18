@@ -49,10 +49,13 @@ mydb = mysql.connector.connect(
 app = Flask(__name__)
 root = "/projectLAB"
 
+@app.route('/')
+def Index():
+    return "<a href='" + root +"'>Project LAB<a>"
 
 @app.route(root + '/')
-def index():
-    return "ProjectLAB by Matthias Schneglberger"
+def projectIndex():
+    return "<h3>  ProjectLAB - Matthias Schneglberger</h3><a href='" + root + "/project/list'>Alle Projekte</a><br/><a href='" + root + "/task/list'>Alle Tasks</a><br/>"
 
 
 # region projectCRUD
@@ -122,7 +125,6 @@ def getProjectList():
     mydb.commit()
     sqlserver.close()
     return jsonstring
-
 
 # endregion projectCRUD
 
