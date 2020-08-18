@@ -3,7 +3,8 @@ import mysql.connector
 from flask import Flask
 from flask import request
 
-#region classes
+
+# region classes
 
 class Project:
     def __init__(self, project_id, title, desc, state):
@@ -31,15 +32,11 @@ class Project:
 
     def fromJson(self, jsonString):
         jsondata = json.load(jsonString)
-        return Project(project_id=jsondata['Id'], title=jsondata['Title'], desc=jsondata['Desc'], state=jsondata['State'])
+        return Project(project_id=jsondata['Id'], title=jsondata['Title'], desc=jsondata['Desc'],
+                       state=jsondata['State'])
 
 
-
-#endregion classes
-
-
-
-
+# endregion classes
 
 mydb = mysql.connector.connect(
     port=3333,
@@ -49,11 +46,8 @@ mydb = mysql.connector.connect(
     db="projectLAB"
 )
 
-
-
 app = Flask(__name__)
 root = "/projectLAB"
-
 
 
 @app.route(root + '/')
@@ -93,29 +87,26 @@ def updateProjectById(id):
     return "update " + id
 
 
-
 @app.route(root + '/project', methods=["POST"])
-def putProject():
+def postProject():
     projJsonString = request.get_json()
     jsondata = json.loads(json.dumps(projJsonString))
-    #pro1 = Project(project_id=jsondata["Id"], title=jsondata["ProjectTitle"], desc=jsondata["ProjectDesc"], state=jsondata["State"])
+    # pro1 = Project(project_id=jsondata["Id"], title=jsondata["ProjectTitle"], desc=jsondata["ProjectDesc"], state=jsondata["State"])
 
     sqlserver = mydb.cursor()
-    sqlserver.execute(("INSERT INTO project VALUES ('{}','{}','{}',{})".format(jsondata["Id"], jsondata["ProjectTitle"], jsondata["ProjectDesc"], jsondata["State"],)))
+    sqlserver.execute(("INSERT INTO project VALUES ('{}','{}','{}',{})".format(jsondata["Id"], jsondata["ProjectTitle"],
+                                                                               jsondata["ProjectDesc"],
+                                                                               jsondata["State"], )))
     mydb.commit()
     sqlserver.close()
 
     return "inserted succefully!"
 
 
-# endregion projectCRUD
-
-
-# region getlists
 @app.route(root + '/project/list', methods=["GET"])
 def getProjectList():
     sqlserver = mydb.cursor()
-    sqlserver.execute(("SELECT * FROM project"))
+    sqlserver.execute("SELECT * FROM project")
     jsonstring = "\"Projects\": ["
     for row in sqlserver.fetchall():
         pro1 = Project(
@@ -133,7 +124,7 @@ def getProjectList():
     return jsonstring
 
 
-# endregion getlists
+# endregion projectCRUD
 
 
 if __name__ == '__main__':
