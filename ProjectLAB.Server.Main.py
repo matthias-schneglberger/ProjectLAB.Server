@@ -14,11 +14,7 @@ class Project:
         self.state = state
 
     def toJson(self):
-        jsonData = {}
-        jsonData['Id'] = self.project_id
-        jsonData['ProjectTitle'] = self.title
-        jsonData['ProjectDesc'] = self.desc
-        jsonData['State'] = self.state
+        jsonData = {'Id': self.project_id, 'ProjectTitle': self.title, 'ProjectDesc': self.desc, 'State': self.state}
 
         jsonString = json.dumps(jsonData)
         return jsonString
@@ -49,9 +45,11 @@ mydb = mysql.connector.connect(
 app = Flask(__name__)
 root = "/projectLAB"
 
+
 @app.route('/')
 def Index():
-    return "<a href='" + root +"'>Project LAB<a>"
+    return "<a href='" + root + "'>Project LAB<a>"
+
 
 @app.route(root + '/')
 def projectIndex():
@@ -94,7 +92,6 @@ def updateProjectById(id):
 def postProject():
     projJsonString = request.get_json()
     jsondata = json.loads(json.dumps(projJsonString))
-    # pro1 = Project(project_id=jsondata["Id"], title=jsondata["ProjectTitle"], desc=jsondata["ProjectDesc"], state=jsondata["State"])
 
     sqlserver = mydb.cursor()
     sqlserver.execute(("INSERT INTO project VALUES ('{}','{}','{}',{})".format(jsondata["Id"], jsondata["ProjectTitle"],
@@ -110,7 +107,7 @@ def postProject():
 def getProjectList():
     sqlserver = mydb.cursor()
     sqlserver.execute("SELECT * FROM project")
-    jsonstring = "\"Projects\": ["
+    jsonstring = "["
     for row in sqlserver.fetchall():
         pro1 = Project(
             project_id=row[0],
@@ -125,6 +122,7 @@ def getProjectList():
     mydb.commit()
     sqlserver.close()
     return jsonstring
+
 
 # endregion projectCRUD
 
